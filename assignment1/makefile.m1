@@ -1,0 +1,14 @@
+CC      = gcc
+CFLAGS  = -g
+RM      = rm -f
+
+
+default: all
+
+all: input
+
+input: input.c
+    $(CC) $(CFLAGS) -o input input.c
+
+clean veryclean:
+    $(RM) input
