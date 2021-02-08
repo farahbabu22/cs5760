@@ -2,6 +2,7 @@
 #include <stdlib.h> 
 
 int main(){
-	printf("PATH: %s\n", getenv("HOME"));
+	char c = '3';
+	printf("PATH: %s\n", getenv(&c));
 	return 0;
 }
