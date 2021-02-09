@@ -83,7 +83,8 @@ void clearAllEnvironmentVariables(char *namevalue){
 void printAllEnvironmentVariables(){
    int i =0; 
    for (i=0; environ[i] != NULL; i++){
-      printf("%s\n", environ[i]);
+      //printf("%s\n", environ[i]);
+      printf("%s:%s\n", environSubString(environ[i], (strlen(environ[i]) - strlen(strchr(environ[i], '=')))), getenv(environSubString(environ[i], (strlen(environ[i])- strlen(strchr(environ[i], '='))))));
    }
 }
 
@@ -109,7 +110,7 @@ int main() {
   printf("********\n");
   clearAllEnvironmentVariables("PASSCODE2=TEST=TEST2");
   printAllEnvironmentVariables();
-  printf("MY VAR :%s", getMyEnv("PASSCODE2"));
+  //printf("MY VAR :%s", getMyEnv("PASSCODE2"));
 
   getchar();
   updateEnvironmentVariable("TZ=est5est");
