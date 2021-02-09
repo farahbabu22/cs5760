@@ -42,6 +42,14 @@ void executeSystem(char *command){
 }
 
 
+int isNameValuePair(char *argv){
+	
+	if(strchr(argv, '=') != NULL){
+		return 1;
+	}
+	return 0;
+}
+
 int test() {
 
   printAllEnvironmentVariables();
