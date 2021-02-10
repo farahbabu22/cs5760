@@ -55,6 +55,13 @@ int isNameValuePair(char *argv){
 	return 0;
 }
 
+int isEndOfCommand(char *argv){
+	if(strchr(argv, ';') != NULL){
+		return 0;
+	}
+	return 1;
+}
+
 int test() {
 
   printAllEnvironmentVariables();
@@ -91,6 +98,8 @@ int main(int argc, char **argv){
         int index;
 	char *next;
 	int status;
+	int optionsflag = 0;
+	int cmdflag = 0;
 
 	if(argc == 1){
 		printAllEnvironmentVariables();
@@ -98,6 +107,7 @@ int main(int argc, char **argv){
 	} 
 
 	while((option = getopt(argc, argv, "ih")) != -1){
+	optionsflag = 1;
 		switch (option){
 			case 'i':
 					index = optind;
@@ -112,12 +122,29 @@ int main(int argc, char **argv){
 							   updateEnvironmentVariable(argv[index]);
 							}else{
 							
-							
-							 // while(index < argc) 
-							  status = executeSystem(argv[index]);
+							  char *cmd;
+						          int j = 0;
+							  while(index < argc){
+								//cmd = strcat(cmd, " ");
+								if(j==0){
+								  cmd = argv[index];
+								  j++;
+								}else{
+								  cmd = strcat(cmd, argv[index]);
+								}
+								if(isEndOfCommand(argv[index])==0){
+									break;
+								}
+								cmd = strcat(cmd, " ");
+								index++;
+							  } 
+							  
+							   status = executeSystem(cmd);
+							   cmdflag = 1; // to dispaly the list of environments after the command has been executed.
 							   
 							   if(status!=0){
 								char str[160];
+								index--;
 								errno = 22;
 								sprintf(str, "%s had an error during executing command %s", argv[0], argv[index]);
 								perror(str);
@@ -128,8 +155,9 @@ int main(int argc, char **argv){
 						}else 
 							break;				
 					}
-					printAllEnvironmentVariables();
-					
+					if(cmdflag == 0)
+					 printAllEnvironmentVariables();
+				
 					break;
 			case 'h':
 					printf("the program is similar to the env utility available in unix\nsupports two arguments \n\t-h : help \n\t-i: to modify name=value pairs, otherwise the pairs modify or add to the current environment\n");
@@ -138,5 +166,47 @@ int main(int argc, char **argv){
 					perror("Unsupported arguments please run the command -h to find out how to use it");
 					break;
 		}
+	}
+
+	if(optionsflag == 0){
+		cmdflag = 0;
+
+		int i = 1;
+		while(i < argc){
+			index = i;
+		        if(isNameValuePair(argv[i]) == 1){
+				updateEnvironmentVariable(argv[index]);
+			}else{
+			  	char *cmd;
+				int j = 0;
+				while(i < argc){
+				  if (j ==0){
+					cmd = argv[i];
+					j++;
+				  }else{
+					cmd = strcat(cmd, argv[i]);
+				  }
+				  if(isEndOfCommand(argv[i])==0){
+					break;
+				  }
+				  cmd = strcat(cmd, " ");
+				  i++;
+				}
+				status = executeSystem(cmd);
+				cmdflag = 1;
+
+				if(status!=0){
+					char str[160];
+					i--;
+					errno = 22;
+					sprintf(str, "%s had an error during execution of command %s", argv[0], argv[i]);
+					perror(str);
+					exit(EXIT_FAILURE);
+				}
+			}
+			i++;
+		}
+		if(cmdflag == 0)
+			printAllEnvironmentVariables();
 	}
 }
