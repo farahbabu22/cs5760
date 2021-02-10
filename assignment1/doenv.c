@@ -3,6 +3,13 @@
 #include<string.h>
 #include <errno.h>
 
+/*
+ * author : farab babu
+ * userid : babu
+ * course : cs5760
+ *
+ */
+
 extern char **environ;
 extern int errno;
 
@@ -16,12 +23,12 @@ char *environSubString(char *namevalue, int n){
 
 // to update the environment value using putenv method
 void updateEnvironmentVariable(char *namevalue){
-    putenv(namevalue);
+    putenv(namevalue); //System library function to update the name value pair
 }
 
 // to clear all environment variables and set the one that is required passed as argument -i option from the command line
 void clearAllEnvironmentVariables(char *namevalue){
-    clearenv();
+    clearenv();                           //to clear all the exisiting environment variables
     if(namevalue != NULL){
 	updateEnvironmentVariable(namevalue);
     }
@@ -40,13 +47,14 @@ void printAllEnvironmentVariables(){
 }
 
 //executes the system command 
+//returns the status which is zero if execution is OK, else 
 int executeSystem(char *command){
 	int status = system(command);
-
 	return status;
 }
 
 
+//To check if the argument is a name value pair makes use of the string library function strchr
 int isNameValuePair(char *argv){
 	
 	if(strchr(argv, '=') != NULL){
@@ -55,6 +63,7 @@ int isNameValuePair(char *argv){
 	return 0;
 }
 
+//To check if its the end of the command terminated by a semicolon
 int isEndOfCommand(char *argv){
 	if(strchr(argv, ';') != NULL){
 		return 0;
@@ -62,34 +71,6 @@ int isEndOfCommand(char *argv){
 	return 1;
 }
 
-int test() {
-
-  printAllEnvironmentVariables();
-
-  getchar();
-  updateEnvironmentVariable("PASSCODE1=BABU");
-  
-  
-  printAllEnvironmentVariables();
-
-  getchar();
-  updateEnvironmentVariable("PASSCODE1=FARAH");
-
-  printAllEnvironmentVariables();
- 
-  getchar();
-  printf("********\n");
-  clearAllEnvironmentVariables("PASSCODE2=TEST=TEST2");
-  printAllEnvironmentVariables();
-  //printf("MY VAR :%s", getMyEnv("PASSCODE2"));
-  //
-
-  getchar();
-  updateEnvironmentVariable("TZ=est5est");
-  printAllEnvironmentVariables();
-  executeSystem("date");
-  return 0;
-}
 
 extern int optind;
 
@@ -111,13 +92,13 @@ int main(int argc, char **argv){
 		switch (option){
 			case 'i':
 					index = optind;
-					//printf("optind: %i, index:%i\n", optind, index);
+					
 					clearAllEnvironmentVariables(NULL);
 					while(index < argc){
 						next = strdup(argv[index]);
-						//index++;
+						
 						if(next[0] != -1){
-							//printf("args: %s = %i\n", next, isNameValuePair(argv[index]));
+							
 							if(isNameValuePair(argv[index]) == 1){
 							   updateEnvironmentVariable(argv[index]);
 							}else{
@@ -125,7 +106,7 @@ int main(int argc, char **argv){
 							  char *cmd;
 						          int j = 0;
 							  while(index < argc){
-								//cmd = strcat(cmd, " ");
+								
 								if(j==0){
 								  cmd = argv[index];
 								  j++;
