@@ -1,9 +1,10 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include <errno.h>
 
 extern char **environ;
-
+extern int errno;
 
 // function to return the name part of the environment variable (name=value pair)
 char *environSubString(char *namevalue, int n){
@@ -21,7 +22,9 @@ void updateEnvironmentVariable(char *namevalue){
 // to clear all environment variables and set the one that is required passed as argument -i option from the command line
 void clearAllEnvironmentVariables(char *namevalue){
     clearenv();
-    updateEnvironmentVariable(namevalue);
+    if(namevalue != NULL){
+	updateEnvironmentVariable(namevalue);
+    }
 }
 
 // To print all the env values in the same way as env utility
@@ -37,8 +40,10 @@ void printAllEnvironmentVariables(){
 }
 
 //executes the system command 
-void executeSystem(char *command){
-	system(command);
+int executeSystem(char *command){
+	int status = system(command);
+
+	return status;
 }
 
 
@@ -70,6 +75,7 @@ int test() {
   clearAllEnvironmentVariables("PASSCODE2=TEST=TEST2");
   printAllEnvironmentVariables();
   //printf("MY VAR :%s", getMyEnv("PASSCODE2"));
+  //
 
   getchar();
   updateEnvironmentVariable("TZ=est5est");
@@ -78,8 +84,13 @@ int test() {
   return 0;
 }
 
+extern int optind;
+
 int main(int argc, char **argv){
 	int option;
+        int index;
+	char *next;
+	int status;
 
 	if(argc == 1){
 		printAllEnvironmentVariables();
@@ -89,6 +100,35 @@ int main(int argc, char **argv){
 	while((option = getopt(argc, argv, "ih")) != -1){
 		switch (option){
 			case 'i':
+					index = optind;
+					//printf("optind: %i, index:%i\n", optind, index);
+					clearAllEnvironmentVariables(NULL);
+					while(index < argc){
+						next = strdup(argv[index]);
+						//index++;
+						if(next[0] != -1){
+							//printf("args: %s = %i\n", next, isNameValuePair(argv[index]));
+							if(isNameValuePair(argv[index]) == 1){
+							   updateEnvironmentVariable(argv[index]);
+							}else{
+							
+							
+							 // while(index < argc) 
+							  status = executeSystem(argv[index]);
+							   
+							   if(status!=0){
+								char str[160];
+								errno = 22;
+								sprintf(str, "%s had an error during executing command %s", argv[0], argv[index]);
+								perror(str);
+								exit(EXIT_FAILURE);
+							   }
+							}
+							index++;
+						}else 
+							break;				
+					}
+					printAllEnvironmentVariables();
 					
 					break;
 			case 'h':
