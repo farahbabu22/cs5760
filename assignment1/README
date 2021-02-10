@@ -1,0 +1,51 @@
+# Assignment 1: System call and library function
+
+This is the assignment to get familiar with the development environment located in UMSL. The execirse implemented illustrates the usage of program which behaves similar to the env unix utility. 
+
+
+# Files
+
+1. doenv.c contains the code of the project
+2. Makefile
+3. README
+
+## Running the program
+
+%    make
+
+## Remove all executables after run
+%  make clean
+
+## System calls, library functions and external variables used
+1. getenv
+2. getopt
+3. putenv
+4. clearenv
+5. strchr
+6. environ
+7. perr
+8. malloc
+9. strcat
+10. system
+
+## Example Runs
+
+    % ./doenv -i [name=value] [name=value]
+Replaces the current execution environment and prints the new replaced values
+
+    % ./doenv -i [name=value] [command1]
+Replaces the current execution environment and executes the command1
+
+    % ./doenv [name=value]
+
+Appends the name value if it doesn't exists if exists replaces the value(updates) and prints the new environment values
+
+    % ./doenv [name=value] [command1]
+
+Appends the name value if it doesn't exists, if exists replaces the value(update) and executes the command.
+
+
+## Items to be improved on
+1.   Need to handle options for the command1
+2.  Need to handle error better
+ 
